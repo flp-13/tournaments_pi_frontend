@@ -1,6 +1,14 @@
 <template>
-  <main font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
-    <router-view />
-    <Footer />
-  </main>
+  <div font-sans text="center gray-700 dark:gray-200">
+    <Navbar />
+    <main>
+      <router-view />
+    </main>
+    <Footer></Footer>
+  </div>
 </template>
+<style scoped lang="scss">
+main{
+  min-height: calc(100vh - 3.75rem - 3.75rem);
+}
+</style>

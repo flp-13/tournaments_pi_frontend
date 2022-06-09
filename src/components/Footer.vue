@@ -1,21 +1,13 @@
-<script setup lang="ts">
-import { isDark, toggleDark } from '~/composables'
-</script>
-
 <template>
-  <nav text-xl mt-6 inline-flex gap-2>
-    <button class="icon-btn !outline-none" @click="toggleDark()">
-      <div v-if="isDark" i-carbon-moon />
-      <div v-else i-carbon-sun />
-    </button>
-
-    <a
-      class="icon-btn"
-      i-carbon-logo-github
-      rel="noreferrer"
-      href="https://github.com/antfu/vitesse-lite"
-      target="_blank"
-      title="GitHub"
-    />
+  <nav text-xl inline-flex gap-2>
+    <div m="r-auto">Developed By Group 1 and Group 2</div>
+    <div m="l-auto">
+      <a href="https://github/" target="_blank" />
+    </div>
   </nav>
 </template>
+<style scoped lang="scss">
+nav{
+  @apply h-15 w-screen shadow-lg flex items-center xl:px-50;
+}
+</style>
