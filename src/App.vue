@@ -1,7 +1,7 @@
 <template>
-  <div font-sans text="center gray-700 dark:gray-200">
+  <div font-sans text="gray-700 dark:gray-200">
     <Navbar />
-    <main>
+    <main class="mt-8">
       <router-view />
     </main>
     <Footer></Footer>
@@ -9,6 +9,6 @@
 </template>
 <style scoped lang="scss">
 main{
-  min-height: calc(100vh - 3.75rem - 3.75rem);
+  min-height: calc(100vh - 3.75rem - 4.25rem);
 }
 </style>

@@ -15,7 +15,7 @@ import { isDark, toggleDark } from '~/composables';
 </template>
 <style scoped lang="scss">
 nav{
-  @apply h-15 w-screen shadow dark:shadow-brand-primary shadow-lg flex items-center xl:px-50;
+  @apply h-15 w-screen shadow dark:shadow-brand-primary shadow-lg flex items-center xl:px-50 lg:px-25 md:px-15 px-5;
 
   .nav-header{
     @apply font-bold text-2xl
