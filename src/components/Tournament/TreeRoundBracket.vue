@@ -12,6 +12,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'placedPlayer', player: Player, bracketId: number, cb: () => void): void
   (event: 'fillWithPlayer', bracket: Bracket): void
+  (event: 'declareWinner', bracket: Bracket): void
 }>();
 
 const placingPlayer = ref(false);
@@ -26,6 +27,12 @@ function placePlayer() {
   }
   if (props.bracket?.match === null)
     fillWithPlayer();
+  if (props.bracket?.match && props.bracket?.match > 0 && !props.bracket.player_id && props.tournamentStarted && props.bracket.prev_match?.left.player_id && props.bracket.prev_match?.right.player_id)
+    declareWinner();
+}
+
+function declareWinner() {
+  emit('declareWinner', props.bracket!);
 }
 
 function fillWithPlayer() {
@@ -47,8 +54,10 @@ const computeClasses = computed<string[]>(() => {
   if (props.tournamentStarted) {
     if (props.bracket?.match === null)
       return unavailable.split(' ');
+    else if (props.bracket?.player_id)
+      return neutral.split(' ');
     else
-      return [];
+      return `${neutral} ${hovered}`.split(' ');
   }
   else {
     if (props.inputingPlayer && props.bracket?.match === null)

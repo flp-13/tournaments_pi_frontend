@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { AxiosError } from 'axios';
 import axios from 'axios'
 import { pick } from 'lodash'
+import { useToast } from 'vue-toastification';
 import type { PaginationAPI, Tournament } from '~/types'
 
 document.title = 'Tournament PI'
@@ -18,6 +20,7 @@ const tournamentForm = reactive<Tournament>({
   description: '',
 })
 const submitting = ref(false);
+const toast = useToast();
 
 function getData() {
   axios.get<PaginationAPI<Tournament>>('/tournaments')
@@ -45,13 +48,18 @@ function handleSubmit() {
   axios.post<Tournament>('/tournaments', tournamentForm)
     .then((res) => {
       if (state.results === null) {
-        state.results = [res.data]
-        return
+        state.results = [res.data];
+        return;
       }
-      state.results.unshift(res.data)
-      handleCloseModal()
-      submitting.value = false;
+      state.results.unshift(res.data);
+      handleCloseModal();
     })
+    .catch((res: AxiosError<any>) => {
+      toast.error(res.response?.data.message);
+    })
+    .finally(() => {
+      submitting.value = false;
+    });
 }
 
 function handleShowEdit(tournament: Tournament) {

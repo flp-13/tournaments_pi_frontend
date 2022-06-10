@@ -11,6 +11,7 @@ defineProps<{
 defineEmits<{
   (event: 'placedPlayer', player: Player, bracketId: number, cb: () => void): Promise<boolean>
   (event: 'fillWithPlayer', bracket: Bracket): void
+  (event: 'declareWinner', braclet: Bracket): void
 }>();
 
 const gap = 10;
@@ -36,6 +37,7 @@ function wrapperHeight(r: number): number {
         :is-last-round="round.length === 1"
         @placed-player="(player, bracketId, cb) => $emit('placedPlayer', player, bracketId, cb)"
         @fill-with-player="(bracket) => $emit('fillWithPlayer', bracket)"
+        @declare-winner="(bracket) => $emit('declareWinner', bracket)"
       />
       <TreeRoundBranch v-if="bracket !== null && round.length > 1" :height="wrapperHeight(roundNum) / 2 + gap / 2" :direction="i % 2 === 0 ? 'down' : 'up'" />
     </div>

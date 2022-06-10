@@ -10,6 +10,7 @@ defineProps<{
 defineEmits<{
   (event: 'placedPlayer', player: Player, bracketId: number, cb: () => void): Promise<boolean>
   (event: 'fillWithPlayer', bracket: Bracket): void
+  (event: 'declareWinner', bracket: Bracket): void
 }>();
 </script>
 
@@ -21,6 +22,7 @@ defineEmits<{
       :tournament-started="tournamentStarted"
       @placed-player="(player, bracketId, cb) => $emit('placedPlayer', player, bracketId, cb)"
       @fill-with-player="(bracket) => $emit('fillWithPlayer', bracket)"
+      @declare-winner="(bracket) => $emit('declareWinner', bracket)"
     />
   </div>
 </template>

@@ -17,7 +17,8 @@
     "sass": "^1.52.1",
     "vue": "^3.2.33",
     "vue-router": "^4.0.15",
-    "vue-skeletor": "^1.0.6"
+    "vue-skeletor": "^1.0.6",
+    "vue-toastification": "^2.0.0-rc.5"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.23.0",
@@ -42,8 +43,12 @@
     "extends": "@antfu",
     "rules": {
       "semi": "off",
-      "@typescript-eslint/semi": ["off"],
-      "vue/html-self-closing": ["off"],
+      "@typescript-eslint/semi": [
+        "off"
+      ],
+      "vue/html-self-closing": [
+        "off"
+      ],
       "no-empty": "warn"
     }
   }

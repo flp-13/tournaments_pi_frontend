@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { AxiosError } from 'axios';
 import axios from 'axios'
 import { cloneDeep, isEmpty } from 'lodash';
+import { useToast } from 'vue-toastification';
 import { bfsBracketTree } from '~/helpers';
 import type { APIBrackets, Bracket, Player, Tournament } from '~/types'
 
@@ -11,7 +13,9 @@ const props = defineProps<{
 const router = useRouter();
 const tournament = ref<Tournament | null>(null);
 const selectedRemainingPlayer = ref<Player | null>(null);
-const selectedBracket = ref<Bracket | null>(null);
+const selectedFillBracket = ref<Bracket | null>(null);
+const selectedWinnerBracket = ref<Bracket | null>(null);
+const toast = useToast();
 const state = reactive<APIBrackets>({
   brackets: null,
   added_players: [],
@@ -66,19 +70,19 @@ function handlePlacePlayer(player: Player, bracketId: number, cb: () => void) {
 }
 
 function handleFillBracket(bracket: Bracket) {
-  selectedBracket.value = bracket;
+  selectedFillBracket.value = bracket;
 }
 
 function handleFill(player: Player) {
-  if (selectedBracket.value) {
-    axios.put(`/brackets/${selectedBracket.value.id}/player`, {
+  if (selectedFillBracket.value) {
+    axios.put(`/brackets/${selectedFillBracket.value.id}/player`, {
       player_id: player.id,
     }).then((_) => {
-      const bracket = bfsBracketTree(state.brackets ?? {}, selectedBracket.value!.id!);
+      const bracket = bfsBracketTree(state.brackets ?? {}, selectedFillBracket.value!.id!);
       if (bracket) {
         bracket.player = player;
         bracket.player_id = player.id;
-        selectedBracket.value = null;
+        selectedFillBracket.value = null;
         state.added_players?.push(player);
         state.remaining_players = state.remaining_players?.filter(x => x.id !== player.id);
       }
@@ -87,23 +91,54 @@ function handleFill(player: Player) {
 }
 
 function handleSwitch(player: Player) {
-  if (selectedBracket.value) {
-    axios.put(`/brackets/${selectedBracket.value.id}/player`, {
+  if (selectedFillBracket.value) {
+    axios.put(`/brackets/${selectedFillBracket.value.id}/player`, {
       player_id: player.id,
     }).then((_) => {
-      const bracket = bfsBracketTree(state.brackets ?? {}, selectedBracket.value!.id!);
+      const bracket = bfsBracketTree(state.brackets ?? {}, selectedFillBracket.value!.id!);
       const targetBracket = bfsBracketTree(state.brackets ?? {}, player.id, 'player_id');
       if (bracket && targetBracket) {
         bracket.player_id = targetBracket.player_id;
         bracket.player = targetBracket.player;
 
-        targetBracket.player_id = selectedBracket.value?.player_id;
-        targetBracket.player = selectedBracket.value?.player;
+        targetBracket.player_id = selectedFillBracket.value?.player_id;
+        targetBracket.player = selectedFillBracket.value?.player;
 
-        selectedBracket.value = null;
+        selectedFillBracket.value = null;
       }
     });
   }
+}
+
+function handleStartTournament() {
+  if (tournament.value) {
+    axios.put(`/tournaments/${tournament.value.id}/start`)
+      .then(() => {
+        tournament.value!.started = true;
+      })
+      .catch((res: AxiosError) => {
+        toast.error((res.response!.data as any).message, {
+          timeout: 6000,
+        })
+      });
+  }
+}
+
+function handleOpenDeclareBracket(bracket: Bracket) {
+  selectedWinnerBracket.value = bracket;
+}
+
+function handleDeclareWinner(a: Bracket, winner: Bracket) {
+  axios.put(`tournaments/${props.tournament}/matches/${a.match}/winner`, {
+    player_id: winner.player_id,
+  }).then((res) => {
+    const bracket = bfsBracketTree(state.brackets ?? {}, a.id);
+    if (bracket) {
+      bracket.player_id = winner.player_id;
+      bracket.player = winner.player;
+      selectedWinnerBracket.value = null;
+    }
+  });
 }
 
 const rounds = computed<Array<Array<Bracket | null>>>(() => {
@@ -153,7 +188,7 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
       </div>
       <hr class="my-4">
       <div class="flex">
-        <router-link class="mr-auto" :to="`/tournaments/${tournament.id}/players`">
+        <router-link v-if="!tournament.started" class="mr-auto" :to="`/tournaments/${tournament.id}/players`">
           <Button class="btn btn-brand-primary md:block hidden">
             Configure Players
           </Button>
@@ -161,12 +196,12 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
             <div i-carbon-user-multiple />
           </Button>
         </router-link>
-        <div class="flex gap-5">
+        <div class="flex gap-5 ml-auto">
           <Button v-if="state.brackets !== null" class="btn" @click="createBrackets">
             {{ rounds.length > 0 ? 'Recreate' : 'Create' }} Brackets
           </Button>
-          <Button v-if="!tournament.started" class="btn btn-theme-warning">
-            Start Tournament
+          <Button :disabled="tournament.started" class="btn btn-theme-warning" @click="handleStartTournament">
+            {{ tournament.started ? (state.brackets?.player_id ? "Tournament Finished" : "Tournament Started") : "Start Tournament" }}
           </Button>
         </div>
       </div>
@@ -177,6 +212,7 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
           :tournament-started="!!tournament.started"
           @placed-player="handlePlacePlayer"
           @fill-with-player="handleFillBracket"
+          @declare-winner="handleOpenDeclareBracket"
         />
         <RemainingPlayers
           v-if="!tournament.started && state.remaining_players && state.remaining_players.length > 0"
@@ -188,11 +224,16 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
     </template>
   </div>
   <EditBracketModal
-    :selected="selectedBracket"
+    :selected="selectedFillBracket"
     :added-players="state.added_players ?? []"
     :remaining-players="state.remaining_players ?? []"
-    @close="selectedBracket = null"
+    @close="selectedFillBracket = null"
     @fill="handleFill"
     @switch="handleSwitch"
+  />
+  <DeclareWinnerModal
+    :selected="selectedWinnerBracket"
+    @close="selectedWinnerBracket = null"
+    @declare-winner="handleDeclareWinner"
   />
 </template>
