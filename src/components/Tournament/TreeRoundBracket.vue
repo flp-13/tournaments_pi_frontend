@@ -24,7 +24,8 @@ function placePlayer() {
     });
     return;
   }
-  fillWithPlayer();
+  if (props.bracket?.match === null)
+    fillWithPlayer();
 }
 
 function fillWithPlayer() {
