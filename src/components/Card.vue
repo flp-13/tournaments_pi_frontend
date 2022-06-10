@@ -1,24 +1,26 @@
 <script setup lang="ts">
 
 </script>
+
 <template>
-<div class="card">
-  <h1 v-if="$slots.title" class="card-title">
-    <slot name="title">
-    </slot>
-  </h1>
-  <div class="card-body">
-    <slot></slot>
+  <div class="card">
+    <h1 v-if="$slots.title" class="card-title">
+      <slot name="title">
+      </slot>
+    </h1>
+    <div class="card-body">
+      <slot></slot>
+    </div>
+    <div v-if="$slots.footer" class="card-footer">
+      <slot name="footer"></slot>
+    </div>
   </div>
-  <div class="card-footer" v-if="$slots.footer">
-    <slot name="footer"></slot>
-  </div>
-</div>
 </template>
+
 <style scoped lang="scss">
 .card{
   @apply shadow-lg dark:shadow-brand-primary inline-block py-3 px-4;
-  
+
   .card-title{
     @apply text-2xl py-2 px-1 font-semibold relative;
 
@@ -29,7 +31,7 @@
       @apply absolute bottom-1 left-0 shadow bg-gray-500 dark:shadow-brand-primary dark:bg-brand-primary
     }
   }
-  
+
   .card-body{
     @apply mt-2
   }
