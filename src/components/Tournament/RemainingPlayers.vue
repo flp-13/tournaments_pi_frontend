@@ -3,6 +3,7 @@ import type { Player } from '~/types';
 
 const props = defineProps<{
   players: Player[]
+  selected: Player | null
 }>();
 
 const emit = defineEmits<{
@@ -10,10 +11,14 @@ const emit = defineEmits<{
   (event: 'randomizePlayers'): void
 }>();
 
-const selected = ref<number | null>(null);
+const selected = ref<Player | null>(props.selected);
 
 watch(() => selected.value, () => {
-  emit('changedSelection', props.players.find(x => x.id === selected.value) ?? null);
+  emit('changedSelection', selected.value);
+});
+
+watch(() => props.selected, () => {
+  selected.value = props.selected;
 });
 </script>
 
@@ -25,9 +30,9 @@ watch(() => selected.value, () => {
     <div flex flex-col>
       <div
         v-for="player in players" :key="player.id ?? 0" py-2 pl-3 flex gap-3
-        :class="{ 'dark:bg-dark-300 bg-light-800': selected === player.id }"
+        :class="{ 'dark:bg-dark-300 bg-light-800': selected?.id === player.id }"
       >
-        <input :id="`remaining-${player.id}`" v-model="selected" type="radio" name="remainingPlayer" :value="player.id" />
+        <input :id="`remaining-${player.id}`" v-model="selected" type="radio" name="remainingPlayer" :value="player" />
         <label :for="`remaining-${player.id}`">{{ player.name }}</label>
       </div>
     </div>

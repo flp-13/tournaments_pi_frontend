@@ -36,6 +36,16 @@
     py-1 px-3 transition 0;
 }
 
-.btn:active{
+.btn:active:not(:disabled){
   filter: brightness(140%);
+}
+
+.btn:disabled{
+  filter: brightness(50%);
+  @apply cursor-default;
+
+  &:hover{
+    pointer-events: none;
+    filter: brightness(50%);
+  }
 }

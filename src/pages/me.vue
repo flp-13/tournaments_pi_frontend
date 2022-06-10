@@ -79,6 +79,7 @@ function handleChangePassword(form: any, cb?: () => void) {
 }
 
 function handleAddTournament() {
+  tournamentForm.id = null;
   tournamentForm.name = tournamentForm.description = '';
   showTournamentModal.value = true;
 }
@@ -87,12 +88,18 @@ function handleTournamentSubmit(form: any, cb?: () => void) {
   if (form.id) {
     axios.put(`/tournaments/${form.id}`, pick(form, ['name', 'description']))
       .then((res) => {
-        // if (state.results) {
-        //   const edited = state.results.find(x => x.id === form.id)
-        //   Object.assign(edited, form)
-        //   handleCloseModal()
-        //   submitting.value = false;
-        // }
+        if (tournamentState.results) {
+          const edited = tournamentState.results.find(x => x.id === form.id);
+          Object.assign(edited, form);
+          handleCloseModal();
+        }
+      })
+      .catch((res: AxiosError<any>) => {
+        toast.error(res.response?.data.message);
+      })
+      .finally(() => {
+        if (cb)
+          cb();
       })
     return
   }

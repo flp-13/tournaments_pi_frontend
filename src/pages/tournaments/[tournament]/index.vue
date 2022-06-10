@@ -5,6 +5,7 @@ import axios from 'axios'
 import { cloneDeep, isEmpty } from 'lodash';
 import { useToast } from 'vue-toastification';
 import { bfsBracketTree } from '~/helpers';
+import { useUser } from '~/stores/useUser';
 import type { APIBrackets, Bracket, Player, Tournament } from '~/types'
 
 const props = defineProps<{
@@ -17,6 +18,7 @@ const selectedRemainingPlayer = ref<Player | null>(null);
 const selectedFillBracket = ref<Bracket | null>(null);
 const selectedWinnerBracket = ref<Bracket | null>(null);
 const toast = useToast();
+const user = useUser();
 const state = reactive<APIBrackets>({
   brackets: null,
   added_players: [],
@@ -41,6 +43,10 @@ axios.get<Tournament>(`/tournaments/${props.tournament}`)
 function createBrackets() {
   axios.put<APIBrackets>(`/tournaments/${props.tournament}/brackets?empty=true`)
     .then((res) => {
+      if (res.status === 204) {
+        toast.warning('Brackets are empty. Please add some players.');
+        return;
+      }
       Object.assign(state, res.data);
     });
 }
@@ -189,7 +195,7 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
       </div>
       <hr class="my-4">
       <div class="flex">
-        <router-link v-if="!tournament.started" class="mr-auto" :to="`/tournaments/${tournament.id}/players`">
+        <router-link v-if="!tournament.started && tournament.user_id === user.id" class="mr-auto" :to="`/tournaments/${tournament.id}/players`">
           <Button class="btn btn-brand-primary md:block hidden">
             Configure Players
           </Button>
@@ -198,10 +204,10 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
           </Button>
         </router-link>
         <div class="flex gap-5 ml-auto">
-          <Button v-if="state.brackets !== null" class="btn" @click="createBrackets">
+          <Button v-if="state.brackets !== null && !tournament.started && tournament.user_id === user.id" class="btn" @click="createBrackets">
             {{ rounds.length > 0 ? 'Recreate' : 'Create' }} Brackets
           </Button>
-          <Button :disabled="tournament.started" class="btn btn-theme-warning" @click="handleStartTournament">
+          <Button :class="{ 'pointer-events-none': tournament.user_id !== user.id || tournament.started }" class="btn btn-theme-warning" @click="handleStartTournament">
             {{ tournament.started ? (state.brackets?.player_id ? "Tournament Finished" : "Tournament Started") : "Start Tournament" }}
           </Button>
         </div>
@@ -218,6 +224,7 @@ const rounds = computed<Array<Array<Bracket | null>>>(() => {
         <RemainingPlayers
           v-if="!tournament.started && state.remaining_players && state.remaining_players.length > 0"
           :players="state.remaining_players"
+          :selected="selectedRemainingPlayer"
           @randomize-players="handleRandomizedBracket"
           @changed-selection="(player) => selectedRemainingPlayer = player"
         />
