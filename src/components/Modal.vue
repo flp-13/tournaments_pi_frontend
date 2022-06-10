@@ -9,20 +9,20 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   (event: 'close'): void,
+  (event: 'closed'): void,
   (event: 'submit'): void
 }>();
 
 const overlay = ref<HTMLElement | null>(null);
 const modal = ref<HTMLElement | null>(null);
+const show = ref(props.show);
 
 function closeModal(){
   if(overlay.value && modal.value){
     overlay.value.classList.add("closing");
     modal.value.classList.add("closing");
   }
-  setTimeout(() => {
-    emit('close');  
-  }, 105);
+  emit('close');
 }
 
 function handleClickedOverlay(e: MouseEvent){
@@ -35,8 +35,17 @@ function handleClickedOverlay(e: MouseEvent){
 
 watch(() => props.show, () => {
   if(props.show){
+    show.value = props.show;
     document.body.classList.add('no-scroll');
   } else {
+    if(overlay.value && modal.value){
+      overlay.value.classList.add("closing");
+      modal.value.classList.add("closing");
+    }
+    setTimeout(() => {
+      show.value = props.show;
+      emit('closed');
+    }, 105);
     document.body.classList.remove('no-scroll');
   }
 });

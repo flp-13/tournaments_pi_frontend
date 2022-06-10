@@ -1,5 +1,9 @@
 @import './themes';
 
+.vue-skeletor{
+  @apply dark:bg-dark-100 bg-light-900;
+}
+
 .btn{
   border: 2px solid;
   border-radius: 5px;

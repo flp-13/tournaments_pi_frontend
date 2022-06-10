@@ -24,6 +24,7 @@ specifiers:
   vitest: ^0.12.4
   vue: ^3.2.33
   vue-router: ^4.0.15
+  vue-skeletor: ^1.0.6
   vue-tsc: ^0.34.12
 
 dependencies:
@@ -34,6 +35,7 @@ dependencies:
   sass: 1.52.1
   vue: 3.2.33
   vue-router: 4.0.15_vue@3.2.33
+  vue-skeletor: 1.0.6
 
 devDependencies:
   '@antfu/eslint-config': 0.23.0_eslint@8.15.0+typescript@4.6.4
@@ -3809,6 +3811,10 @@ packages:
     dependencies:
       '@vue/devtools-api': 6.0.13
       vue: 3.2.33
+    dev: false
+
+  /vue-skeletor/1.0.6:
+    resolution: {integrity: sha512-ER4vHlFSXCW3ixK2DlczUE6CZliHsn4d2TvZ9/26C6Oq8zoyEY23BsqweMPtF8QULSz1+G5m2New1BwKNVOZhQ==}
     dev: false
 
   /vue-tsc/0.34.12_typescript@4.6.4:

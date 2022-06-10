@@ -11,37 +11,41 @@ const props = defineProps({
   id: String,
   invalidFeedback: String,
   autocomplete: String,
-  placeholder: String
+  placeholder: String,
 });
 
-const value = ref(props.modelValue ?? "");
+const value = ref(props.modelValue ?? '');
 const focused = ref(false);
 
-watch(() => props.modelValue, () => {value.value = props.modelValue});
+watch(() => props.modelValue, () => { value.value = props.modelValue });
 
-function handleFocus(value){
+function handleFocus(value) {
   focused.value = value;
 }
-
 </script>
+
 <template>
   <div class="input-group-wrapper">
-    <div class="input-group" :class="{'has-value': value.length > 0, [focused ? 'focused' : 'blurred']: true, 'is-invalid': invalidFeedback}">
-      <input :type="type" :id="id" :name="name" v-model="value" :min="min" :max="max"
+    <div class="input-group" :class="{ 'has-value': value.length > 0, [focused ? 'focused' : 'blurred']: true, 'is-invalid': invalidFeedback }">
+      <input
+        :id="id" v-model="value" :type="type" :name="name" :min="min" :max="max"
         :autocomplete="autocomplete"
-        @input="$emit('update:modelValue', $event.target.value)"
         :placeholder="focused && value.length === 0 ? placeholder : ''"
+        @input="$emit('update:modelValue', $event.target.value)"
         @focusin="handleFocus(true)"
         @focusout="handleFocus(false)"
       />
-      <label class="flex gap-1 items-center mb-2" :for="id" v-if="label">
+      <label v-if="label" class="flex gap-1 items-center mb-2" :for="id">
         <div><slot name="label-icon"></slot></div>
         <div>{{ label }}</div>
       </label>
     </div>
-    <div class="invalid-feedback">{{ invalidFeedback }}</div>
+    <div class="invalid-feedback">
+      {{ invalidFeedback }}
+    </div>
   </div>
 </template>
+
 <style scoped lang="scss">
 @import '../styles/themes';
 
@@ -49,7 +53,7 @@ function handleFocus(value){
   top: 0px;
   transform: none;
   font-size: 0.85rem;
-  transition: 100ms all linear; 
+  transition: 100ms all linear;
 }
 
 @mixin label-close{
@@ -57,7 +61,7 @@ function handleFocus(value){
   transform: translateY(-50%);
   left: 10px;
   pointer-events: none;
-  transition: 100ms all linear; 
+  transition: 100ms all linear;
 }
 
 .input-group-wrapper{

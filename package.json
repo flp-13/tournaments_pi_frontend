@@ -16,7 +16,8 @@
     "lodash": "^4.17.21",
     "sass": "^1.52.1",
     "vue": "^3.2.33",
-    "vue-router": "^4.0.15"
+    "vue-router": "^4.0.15",
+    "vue-skeletor": "^1.0.6"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.23.0",
@@ -38,6 +39,12 @@
     "vue-tsc": "^0.34.12"
   },
   "eslintConfig": {
-    "extends": "@antfu"
+    "extends": "@antfu",
+    "rules": {
+      "semi": "off",
+      "@typescript-eslint/semi": ["off"],
+      "vue/html-self-closing": ["off"],
+      "no-empty": "warn"
+    }
   }
 }
