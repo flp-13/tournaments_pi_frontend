@@ -1,25 +1,61 @@
 <script setup lang="ts">
+import type { AxiosError } from 'axios';
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
+import type { User } from '~/types';
 import { isDark, toggleDark } from '~/composables';
+import { useUser } from '~/stores/useUser';
 
 const showLogin = ref(false);
+const loginModal = ref();
 const showRegister = ref(false);
+const registerModal = ref();
+
+const toast = useToast();
+const user = useUser();
+
+function setLogin(token: string, newUser: User) {
+  localStorage.setItem('token', token);
+  axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  Object.assign(user, newUser);
+}
 
 function handleRegister(form: any) {
-  axios.post('/register', form)
-    .then(() => {
-
+  axios.post<any>('/register', form)
+    .then((res) => {
+      setLogin(res.data.token, res.data.user);
+      registerModal.value.resetForm();
+      showRegister.value = false;
+    })
+    .catch((res) => {
+      if (res.response?.status === 401) {
+        toast.error(res.response?.data.message, {
+          timeout: 3000,
+        });
+      }
     });
 }
 
 function handleLogin(form: any) {
-  axios.post('/login', form, {
-    headers: {
-      'With-Credentials': true,
-    },
-  }).then(() => {
+  axios.post<any>('/login', form)
+    .then((res) => {
+      setLogin(res.data.token, res.data.user);
+      loginModal.value.resetForm();
+      showLogin.value = false;
+    })
+    .catch((res: AxiosError<any>) => {
+      if (res.response?.status === 401) {
+        toast.error(res.response?.data.message, {
+          timeout: 3000,
+        });
+      }
+    });
+}
 
-  });
+function handleLogout() {
+  localStorage.removeItem('token');
+  delete axios.defaults.headers.common.Authorization;
+  user.$reset();
 }
 </script>
 
@@ -29,20 +65,32 @@ function handleLogin(form: any) {
       Tournaments-PI
     </router-link>
     <div flex gap-5 ml-auto>
-      <Button class="btn btn-brand-primary" @click="showLogin = true">
-        Login
-      </Button>
-      <Button class="btn btn-brand-primary" @click="showRegister = true">
-        Register
-      </Button>
+      <div v-if="!user.id" flex gap-5>
+        <Button class="btn btn-brand-primary" @click="showLogin = true">
+          Login
+        </Button>
+        <Button class="btn btn-brand-primary" @click="showRegister = true">
+          Register
+        </Button>
+      </div>
+      <div v-else flex gap-5>
+        <router-link to="/me">
+          <Button class="btn btn-brand-primary">
+            Dashboard
+          </Button>
+        </router-link>
+        <Button class="btn btn-theme-danger" @click="handleLogout">
+          Logout
+        </Button>
+      </div>
       <button btn @click="toggleDark()">
         <div v-if="isDark" i-carbon-moon />
         <div v-else i-carbon-sun />
       </button>
     </div>
   </nav>
-  <LoginModal :show="showLogin" @close="showLogin = false" @submit="handleLogin" />
-  <RegisterModal :show="showRegister" @close="showRegister = false" @submit="handleRegister" />
+  <LoginModal ref="loginModal" :show="showLogin" @close="showLogin = false" @submit="handleLogin" />
+  <RegisterModal ref="registerModal" :show="showRegister" @close="showRegister = false" @submit="handleRegister" />
 </template>
 
 <style scoped lang="scss">

@@ -5,13 +5,13 @@
  * https://github.com/devstark-com/vue-textarea-autosize/issues/35
  */
 const props = withDefaults(defineProps<{
-  modelValue: string | number,
-  autosize?: boolean,
-  minHeight?: number | null,
-  maxHeight?: number | null,
-  important?: boolean | string[],
-  label?: string,
-  id?: string,
+  modelValue: string | number
+  autosize?: boolean
+  minHeight?: number | null
+  maxHeight?: number | null
+  important?: boolean | string[]
+  label?: string
+  id?: string
   name?: string
 }>(), {
   modelValue: '',
@@ -20,19 +20,21 @@ const props = withDefaults(defineProps<{
   maxHeight: null,
   important: false,
   id: '',
-  name: ''
+  name: '',
 });
-
+const emit = defineEmits<{
+  (event: 'update:modelValue', val: string | number | undefined | string[]): void
+}>();
 const state = reactive<{
-  val: string | string[] | undefined | number,
-  maxHeightScroll: boolean,
-  height: string,
+  val: string | string[] | undefined | number
+  maxHeightScroll: boolean
+  height: string
   focused: boolean
 }>({
   val: '',
   maxHeightScroll: false,
   height: 'auto',
-  focused: false
+  focused: false,
 });
 
 const textarea = ref<HTMLTextAreaElement>();
@@ -42,31 +44,6 @@ state.val = props.modelValue;
 onMounted(() => {
   resize();
 });
-
-const emit = defineEmits<{
-  (event: 'update:modelValue', val: string | number | undefined | string[]): void
-}>();
-
-function resize(){
-  const important = isHeightImportant.value ? 'important' : '';
-  state.height = `auto${important ? ' !important' : ''}`;
-  nextTick(() => {
-    let contentHeight = textarea.value!.scrollHeight + 1
-    if (props.minHeight) {
-      contentHeight = contentHeight < props.minHeight ? props.minHeight : contentHeight;
-    }
-    if (props.maxHeight) {
-      if (contentHeight > props.maxHeight) {
-        contentHeight = props.maxHeight;
-        state.maxHeightScroll = true;
-      } else {
-        state.maxHeightScroll = false;
-      }
-    }
-    const heightVal = contentHeight + 'px';
-    state.height = `${heightVal}${important ? ' !important' : ''}`;
-  });
-}
 
 const isResizeImportant = computed(() => {
   const imp = props.important;
@@ -83,12 +60,35 @@ const isHeightImportant = computed(() => {
   return imp === true || (Array.isArray(imp) && imp.includes('height'));
 });
 
+function resize() {
+  const important = isHeightImportant.value ? 'important' : '';
+  state.height = `auto${important ? ' !important' : ''}`;
+  nextTick(() => {
+    let contentHeight = textarea.value!.scrollHeight + 1
+    if (props.minHeight)
+      contentHeight = contentHeight < props.minHeight ? props.minHeight : contentHeight;
+
+    if (props.maxHeight) {
+      if (contentHeight > props.maxHeight) {
+        contentHeight = props.maxHeight;
+        state.maxHeightScroll = true;
+      }
+      else {
+        state.maxHeightScroll = false;
+      }
+    }
+    const heightVal = `${contentHeight}px`;
+    state.height = `${heightVal}${important ? ' !important' : ''}`;
+  });
+}
+
 const computedStyles = computed(() => {
-  if(!props.autosize) return {};
+  if (!props.autosize)
+    return {};
   return {
     resize: isResizeImportant.value ? 'none' : 'none !important',
     height: state.height,
-    overflow: state.maxHeightScroll ? 'auto' : (!isOverflowImportant.value ? 'hidden': 'hidden !important')
+    overflow: state.maxHeightScroll ? 'auto' : (!isOverflowImportant.value ? 'hidden' : 'hidden !important'),
   };
 });
 
@@ -98,8 +98,6 @@ watch(() => props.modelValue, () => {
 
 watch(() => state.val, (val) => {
   nextTick(resize);
-  console.log(state.val);
-  
   emit('update:modelValue', val);
 });
 
@@ -112,18 +110,22 @@ watch(() => props.maxHeight, () => {
 });
 
 watch(() => props.autosize, (val) => {
-  if(val) resize();
+  if (val)
+    resize();
 });
 </script>
+
 <template>
   <div class="input-group-wrapper">
-    <div class="input-group" :class="{
-      'has-value': state.val, [state.focused ? 'focused' : 'blurred']: true
-    }">
+    <div
+      class="input-group" :class="{
+        'has-value': state.val, [state.focused ? 'focused' : 'blurred']: true,
+      }"
+    >
       <textarea
-        :style="(computedStyles as any)"
-        v-model="state.val"
         ref="textarea"
+        v-model="state.val"
+        :style="computedStyles as any"
         rows="1"
         @focus="resize"
         @focusin="state.focused = true"
@@ -134,6 +136,7 @@ watch(() => props.autosize, (val) => {
     <div class="invalid-feedback"></div>
   </div>
 </template>
+
 <style scoped lang="scss">
 @import '../styles/themes';
 
@@ -141,7 +144,7 @@ watch(() => props.autosize, (val) => {
   top: 0px;
   transform: none;
   font-size: 0.85rem;
-  transition: 100ms all linear; 
+  transition: 100ms all linear;
 }
 
 @mixin label-close{
@@ -149,7 +152,7 @@ watch(() => props.autosize, (val) => {
   transform: translateY(-50%);
   left: 10px;
   pointer-events: none;
-  transition: 100ms all linear; 
+  transition: 100ms all linear;
 }
 
 .input-group-wrapper{

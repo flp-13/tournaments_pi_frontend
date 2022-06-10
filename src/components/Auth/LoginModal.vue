@@ -14,6 +14,12 @@ const formState = reactive<{
   username: '',
   password: '',
 });
+
+function resetForm() {
+  formState.username = formState.password = ''
+}
+
+defineExpose({ resetForm });
 </script>
 
 <template>

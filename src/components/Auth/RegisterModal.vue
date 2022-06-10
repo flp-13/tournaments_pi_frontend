@@ -18,6 +18,12 @@ const formState = reactive<{
   password: '',
   password_confirmation: '',
 });
+
+function resetForm() {
+  formState.username = formState.email = formState.password = formState.password_confirmation = '';
+}
+
+defineExpose({ resetForm });
 </script>
 
 <template>
