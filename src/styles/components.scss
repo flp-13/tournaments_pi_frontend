@@ -1,0 +1,51 @@
+@import './themes';
+
+.vue-skeletor{
+  @apply dark:bg-dark-100 bg-light-900;
+}
+
+.btn{
+  border: 2px solid;
+  border-radius: 5px;
+  @apply dark:border-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-500
+    border-gray-700 hover:border-gray-700 hover:bg-gray-700 hover:text-white
+    py-1 px-3 transition 0;
+}
+
+.btn-brand-primary{
+  border: 2px solid;
+  border-radius: 5px;
+  @apply dark:border-brand-primary dark:hover:bg-brand-primary dark:hover:border-brand-primary
+    border-brand-primary hover:border-brand-primary hover:bg-brand-primary hover:text-white
+    py-1 px-3 transition 0;
+}
+
+.btn-theme-warning{
+  border: 2px solid;
+  border-radius: 5px;
+  @apply dark:border-theme-warning dark:hover:bg-theme-warning dark:hover:border-theme-warning
+    border-theme-warning hover:border-theme-warning hover:bg-theme-warning hover:text-white
+    py-1 px-3 transition 0;
+}
+
+.btn-theme-danger{
+  border: 2px solid;
+  border-radius: 5px;
+  @apply dark:border-theme-danger dark:hover:bg-theme-danger dark:hover:border-theme-danger
+    border-theme-danger hover:border-theme-danger hover:bg-theme-danger hover:text-white
+    py-1 px-3 transition 0;
+}
+
+.btn:active:not(:disabled){
+  filter: brightness(140%);
+}
+
+.btn:disabled{
+  filter: brightness(50%);
+  @apply cursor-default;
+
+  &:hover{
+    pointer-events: none;
+    filter: brightness(50%);
+  }
+}
