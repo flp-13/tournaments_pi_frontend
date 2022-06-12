@@ -16,10 +16,7 @@ specifiers:
   pinia: ^2.0.14
   pnpm: ^7.0.1
   sass: ^1.52.1
-<<<<<<< HEAD
   sweetalert2: ^11.4.17
-=======
->>>>>>> 952929907dabc08a95d0c1e0f7844891f6cdb136
   typescript: ^4.6.4
   unocss: ^0.33.2
   unplugin-auto-import: ^0.7.1
@@ -40,10 +37,7 @@ dependencies:
   lodash: 4.17.21
   pinia: 2.0.14_ytvqwwdyss532bvoq2clv4ed5m
   sass: 1.52.1
-<<<<<<< HEAD
   sweetalert2: 11.4.17
-=======
->>>>>>> 952929907dabc08a95d0c1e0f7844891f6cdb136
   vue: 3.2.33
   vue-router: 4.0.15_vue@3.2.33
   vue-skeletor: 1.0.6
@@ -3484,13 +3478,10 @@ packages:
     engines: {node: '>= 0.4'}
     dev: true
 
-<<<<<<< HEAD
   /sweetalert2/11.4.17:
     resolution: {integrity: sha512-z0iQW5fDdvtoDNle3iHTKunsuNWgPaMifVu0GPtdguR0uVPrvg9gg9bnSQeJ4tx3C7FwJOEnRshxrs6fFItRvw==}
     dev: false
 
-=======
->>>>>>> 952929907dabc08a95d0c1e0f7844891f6cdb136
   /symbol-tree/3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
     dev: true
