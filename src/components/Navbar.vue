@@ -12,6 +12,7 @@ const registerModal = ref();
 
 const toast = useToast();
 const user = useUser();
+const router = useRouter()
 
 function setLogin(token: string, newUser: User) {
   localStorage.setItem('token', token);
@@ -57,6 +58,7 @@ function handleLogout() {
   localStorage.removeItem('token');
   delete axios.defaults.headers.common.Authorization;
   user.$reset();
+  router.push("/");
 }
 </script>
 
